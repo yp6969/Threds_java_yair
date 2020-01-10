@@ -21,10 +21,11 @@ public class Game extends Thread {
 	 * sleep(x*TIME_SIMULATION_FACTOR);
 	 */
 	public static final int TIME_SIMULATION_FACTOR = 1000;
-
+	
 	private Players players;
-	private Ball ball;
 	private Display display;
+	private int numPlayers;
+	private long timeForGameM;
 	private double playerActiveMean;
 	private double playerActiveVar;
 	private double playerArrivalMean;
@@ -36,19 +37,33 @@ public class Game extends Thread {
 	 */
 	public Game(long timeForGameM, int numPlayers, double playerActiveMean, double playerActiveVar,
 			double playerArrivalMean, double playerArrivalVar) throws Exception {
-		if( timeForGameM <= 0 || numPlayers < 2 || playerActiveMean ) {
-			throw new IllegalArgumentException();
-		}
-		/////
-		/////
-		////
-		////
-
+		
+		this.timeForGameM = timeForGameM;
+		this.numPlayers = numPlayers;
+		this.playerActiveMean = playerActiveMean;
+		this.playerActiveVar = playerActiveVar;
+		this.playerArrivalMean = playerArrivalMean;
+		this.playerArrivalVar = playerArrivalVar;	
+		players = new Players();
 	}
 
 	public void run() {
+		// add "numPlayers" new player
 		
+		for (int i=1; i<10; i++) {
+			
+			Player temp = new Player(i,players, gaussian(playerActiveMean,playerActiveVar),System.currentTimeMillis());
+			players.addPlayer(temp);
+			temp.start();
+			
+			/*try {
+				Game.sleep(gaussian(playerArrivalMean,playerArrivalVar));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}*/
+		}	
 	}
+	
 
 	/**
 	 * gaussian - compute a random number drawn from a normal (Gaussian)
@@ -60,7 +75,7 @@ public class Game extends Thread {
 	 *            - the variance of the distribution
 	 * @return
 	 */
-	public static int gaussian(int periodMean, int periodVar) {
+	public static int gaussian(double periodMean, double periodVar) {
 		double period = 0;
 		while (period < 1)
 			period = periodMean + periodVar * random.nextGaussian();
